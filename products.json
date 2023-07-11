@@ -1,0 +1,10 @@
+[
+    {"id": 1, "name": "El Padrino", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRr9K8NKrOES4bYCvXB32tBifXnHQjtk_R7cw&usqp=CAU"},
+    {"id": 2, "name": "Scarface", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTf8qbp2SwqqMXCwTnGGgITYkvdTf4X37GAA&usqp=CAU"},
+    {"id": 3, "name": "Taxi Driver", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGyIXnt6dBU-3KFlG5AuxDXtattN3ljAl-uA&usqp=CAU"},
+    {"id": 4, "name": "Avangers: Infinity War", "img": "https://www.pngplay.com/wp-content/uploads/12/Avengers-Infinity-War-Download-Free-PNG.png"},
+    {"id": 5, "name": "Batman: The Dark Knight", "img": "https://w7.pngwing.com/pngs/846/181/png-transparent-batman-two-face-commissioner-gordon-film-dvd-christian-bale-celebrities-television-poster.png"},
+    {"id": 6, "name": "Drive", "img": "https://www.kindpng.com/picc/m/238-2383827_drive-movie-png-drive-movie-logo-png-transparent.png"},
+    {"id": 7, "name": "Big Hero 6", "img": "https://pics.filmaffinity.com/Big_Hero_6-340669492-large.jpg"},
+    {"id": 8, "name": "Hercules", "img": "https://i0.wp.com/www.edmradio.es/wp-content/uploads/2020/12/mercules_cine.png?fit=640%2C410&ssl=1"}
+]
