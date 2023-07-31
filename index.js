@@ -1,95 +1,138 @@
-const products = [
-    {id: 1, name: 'El Padrino'},
-    {id: 2, name: 'Scarface'},
-    {id: 3, name: 'Taxi Driver'},
-    {id: 4, name: 'Avangers: Infinity War'},
-    {id: 5, name: 'Batman: The Dark Knight'},
-    {id: 6, name: 'Drive'},
-    {id: 7, name: 'Big Hero 6'},
-    {id: 8, name: 'Hercules'},
-]
+// Aquí almacenaremos los productos del JSON
+let productsData = [];
+let productsInWatchList = []
 
 
-//Interactuando con el DOM
-const catalogo = document.querySelector('#catalogo')
+// Función para obtener los productos guardados en la watchlist
+const getProductsFromStorage = () => {
+    const storageProducts = localStorage.getItem('listaPeliculas', JSON.stringify(productsData))
+    return JSON.parse(storageProducts)
+ }
 
-fetch('/products.json')
-    .then(Response => Response.json())
-    .then(products => {
-        html = ''
-products.forEach(product => {
-    html += `
-    <div class="grid">
-    <div id="boxes" class="grid-container">
-    <div id='p-${product.id}' class='col-sm'>
-        <p>${product.name}</p>
-        <img src='${product.img}'>
-        <button class='add btn btn-success'>Agregar</button>
-        <button class='remove btn btn-danger'>Remover</button>
-    </div>
-    </div>
-    `
-    
-})  
-    catalogo.innerHTML = html
+ const productsFromStorage = getProductsFromStorage()
 
-    })    
+ // Logica para mostrar los productos guardados previamente en el localStorage
+ if(productsFromStorage){
+    productsInWatchList = productsFromStorage
 
-console.log('Watchlist')
+    productsFromStorage.forEach((product) => {
+        const listItem = document.createElement("li");
+        listItem.id = `watchlist-item-${product.id}`;
+        listItem.innerText = product.name;
+        watchlist.appendChild(listItem);
+    })
+ }
 
-const btns = document.getElementsByTagName('button')
-for (const btn of btns) {
-    btn.onclick = addtoplaylist
+// Esta función renderiza los productos en el HTML
+const renderProducts = () => {
+    const productsContainer = document.getElementById("products");
+
+    if (!productsContainer) return;
+
+    productsContainer.innerHTML = "";
+
+    productsData.forEach(product => {
+        const productHTML = `
+            <div id='p-${product.id}' class='col-sm'>
+                <p>${product.name}</p>
+                <img src='${product.img}'>
+                <button class='add btn btn-success' data-id='${product.id}'>Agregar</button>
+                <button class='remove btn btn-danger' data-id='${product.id}'>Remover</button>
+            </div>
+        `;
+        productsContainer.innerHTML += productHTML;
+    });
+
+    productsFromStorage = getProductsFromStorage
 }
 
-function addtoplaylist(e) {
-    const btn = e.target
-    const id = btn.id.split('-')[1]
+// Función para agregar un producto a la watchlist
+const addToWatchlist = (productId) => {
+    const product = productsData.find(item => item.id === productId);
+    if (!product) return;
 
-    const product = products.find(p => p.name == products)
-    console.log('peliculas')
+    const watchlist = document.getElementById("watchlist");
+    if (!watchlist) return;
+
+    const existingItem = watchlist.querySelector(`#watchlist-item-${product.id}`);
+    if (existingItem) {
+        Toastify({
+            text: `${product.name} ya está en tu watchlist.`,
+            duration: 2000,
+            gravity: "top",
+            backgroundColor: "orange",
+        }).showToast();
+        return;
+    }
+
+    const listItem = document.createElement("li");
+    listItem.id = `watchlist-item-${product.id}`;
+    listItem.innerText = product.name;
+    watchlist.appendChild(listItem);
+    productsInWatchList.push(product)
+
+    Toastify({
+        text: `${product.name} se ha agregado a tu watchlist.`,
+        duration: 2000,
+        gravity: "top",
+        backgroundColor: "green",
+    }).showToast();
 }
 
+// Función para remover un producto de la watchlist
+const removeFromWatchlist = (productId) => {
+    const product = productsData.find(item => item.id === productId);
+    if (!product) return;
 
-//area de almacenado
-const guardado = (clave, valor) => {localStorage.setItem(clave, valor)}
+    const listItem = document.getElementById(`watchlist-item-${product.id}`);
+    if (listItem) {
+        listItem.remove();
+        productsInWatchList = productsInWatchList.filter((item) => item.id !== productId)
+    }
+}
 
-guardado('listaPeliculas', JSON.stringify(products))
+// Asignamos los eventos a los botones 'add' y 'remove'
+document.addEventListener("click", event => {
+    if (event.target.classList.contains("add")) {
+        const productId = event.target.dataset.id;
+        addToWatchlist(parseInt(productId));
+    } else if (event.target.classList.contains("remove")) {
+        const productId = event.target.dataset.id;
+        removeFromWatchlist(parseInt(productId));
+    }
+});
 
-//eventos
+
+// Función para almacenar los productos agregados en la watchlist
+const saveWatchList = () => {
+    localStorage.setItem('listaPeliculas', JSON.stringify(productsInWatchList))
+}
+
+// Función para guardar los productos en el localStorage y recargar la pagina
+
 let enviar = document.getElementById('enviar')
-enviar.onmousedown = () => {alert('Muchas gracias')
-                            location.reload()
+enviar.onmousedown = () => {
+    saveWatchList()
+    alert('Muchas gracias')
+    location.reload()
 }
 
-//añadiendo libreria
-const btnAdds = document.getElementsByClassName('add')
-const btnRemove = document.getElementsByClassName('remove')
+// Consumir el JSON y renderizar los productos si el localStorage está vacío
 
-for (let i = 0; i < btnAdds.length; i++) {
-    btnAdds[i].onclick = e => {
-        const id = e.target.parentElement.id.split('-')[1]//para poder obtener el id de los productos
-        const pelicula = products.find(p => p.id == id)
-        
-        Toastify({
-            text: `Haz elegido ${pelicula.name}`,
-            duration: 3000
-        }).showToast();
-    }
-}
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch("products.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al cargar el JSON.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                productsData = data;
+                renderProducts(productsData);
+            })
+            .catch(error => {
+                console.error("Error al cargar el JSON:", error);
+            });
+    });
 
-for (let i = 0; i < btnRemove.length; i++) {
-    btnRemove[i].onclick = e => {
-        const id = e.target.parentElement.id.split('-')[1]
-        const pelicula = products.find(p => p.id == id)
-        
-        Toastify({
-            text: `Ya no quieres ${pelicula.name}`,
-            className: "danger",
-            style: {
-                background: "red",
-            },
-            duration: 3000
-        }).showToast();
-    }
-}
